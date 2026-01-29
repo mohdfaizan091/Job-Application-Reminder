@@ -1,5 +1,6 @@
 const JobApplication = require("../models/JobApplication.model");
 const rules = require("./reminder.rules");
+const { sendNotification } = require("../services/notification.service");
 
 const CHECK_INTERVAL = 1000 * 10; // temp=10sec
 
@@ -21,9 +22,11 @@ async function runReminderCheck() {
     });
 
     for (const app of applications) {
-      console.log(
-        `⏰ ${rule.name} triggered for ${app.company} - ${app.role}`
-      );
+      sendNotification({
+        type: rule.name,
+        company: app.company,
+        role: app.role,
+      });
 
       // Record action (IDEMPOTENCY)
       app.actions.push({
